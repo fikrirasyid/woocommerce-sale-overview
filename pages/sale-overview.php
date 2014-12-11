@@ -19,6 +19,7 @@
 				<tr>
 					<th style="width: 30px;"><?php _e( 'No.', 'woocommerce-sale-overview' ); ?></th>
 					<th style="width: 110px;"><?php _e( 'Product Type', 'woocommerce-sale-overview' ); ?></th>
+					<th><?php _e( 'Brand', 'woocommerce-sale-overview' ); ?></th>
 					<th><?php _e( 'Name', 'woocommerce-sale-overview' ); ?></th>
 					<th><?php _e( 'Variations', 'woocommerce-sale-overview' ); ?></th>
 					<th><?php _e( 'Normal Price', 'woocommerce-sale-overview' ); ?></th>
@@ -64,9 +65,18 @@
 							<td class="product-type" rowspan="<?php echo $rowspan; ?>">
 								<?php echo $product['variable']->product_type; ?>
 							</td>					
+
+							<td class="brand" rowspan="<?php echo $rowspan; ?>">
+								<?php the_terms( $product['variable']->id, 'brand' ); ?>
+							</td>	
 						
 							<td class="name column-name" rowspan="<?php echo $rowspan; ?>">
 								<?php echo $this->product->get_title( $product['variable'] ); ?>
+
+								<p>
+									<a href="<?php echo get_permalink( $product['variable']->id ); ?>"><?php _e( 'View', 'woocommerce-sale-overview' ); ?></a> |
+									<a href="<?php echo $this->product->get_edit_url( $product['variable']->id ); ?>"><?php _e( 'Edit', 'woocommerce-sale-overview' ); ?></a>
+								</p>
 							</td>
 
 							<?php // VARIATIONS' LOOP STARTS ?>
@@ -110,7 +120,7 @@
 											<?php echo $variation->get_image( 'shop_thumbnail', array( 'style' => 'width: 100%; height:auto;' ) ); ?>					
 										</a>
 									</td>
-									
+
 									<?php $variation_index++; ?>
 
 								<?php endforeach; ?>
@@ -133,8 +143,17 @@
 							<?php echo $product->product_type; ?>
 						</td>					
 
+						<td class="brand">
+							<?php the_terms( $product->id, 'brand' ); ?>
+						</td>					
+
 						<td class="name column-name">
 							<?php echo $this->product->get_title( $product ); ?>
+
+							<p>
+								<a href="<?php echo get_permalink( $product->id ); ?>"><?php _e( 'View', 'woocommerce-sale-overview' ); ?></a> |
+								<a href="<?php echo $this->product->get_edit_url( $product->id ); ?>"><?php _e( 'Edit', 'woocommerce-sale-overview' ); ?></a>
+							</p>
 						</td>		
 
 						<td></td>
