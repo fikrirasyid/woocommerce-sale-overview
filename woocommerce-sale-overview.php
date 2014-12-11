@@ -75,7 +75,54 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		 * @return void
 		 */
 		public function render_page(){
-			include_once( $this->plugin_dir . '/pages/sale-overview.php' );
+
+			$this->render_div( 'start', array( 'class' => 'wrap' ) );
+
+			// Render tab
+			$this->render_tab_nav(); 
+
+			// Get prepared products
+			$products = $this->product->get_products();
+
+			// Render table
+			$this->render_table( $products );
+
+			$this->render_div( 'end' );
+
+		}
+
+		/**
+		 * Adding div
+		 * 
+		 * @access private
+		 * @param string 	start|end
+		 * @param array 	attributes
+		 * 
+		 * @return void
+		 */
+		private function render_div( $mode = 'start', $attr = array() ){
+			switch ( $mode ) {
+				case 'end':
+					$output = '</div>';
+					break;
+				
+				default:
+
+					$output = '<div';
+
+					if( ! empty( $attr ) ){
+
+						foreach( $attr as $key => $value ){
+							$output .= " {$key}='{$value}'";
+						}
+					}
+
+					$output .= '>';
+
+					break;
+			}
+
+			echo $output;
 		}
 
 		/**
