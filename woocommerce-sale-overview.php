@@ -143,9 +143,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 			foreach ( $tabs as $key => $label ) {
 				if( $selected == $key ){
-					echo '<a href="" class="nav-tab nav-tab-active">' . $label . '</a>';
+					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab nav-tab-active">' . $label . '</a>';
 				} else {					
-					echo '<a href="" class="nav-tab">' . $label . '</a>';
+					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab">' . $label . '</a>';
 				}
 			}
 
