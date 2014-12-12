@@ -240,33 +240,38 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 								
 								<?php
 									// Specific adjustment for variable product
-									if ( isset( $product['variable'] ) ) :
+									if ( isset( $product['variations'] ) && ! empty( $product['variations']) ) :
 
+										// Calculate rowspan
 										if( isset( $product['variations'] ) ){
 											$rowspan = count( $product['variations'] );									
 										} else {
 											$rowspan = 0;
 										}
-								?>
+
+										// Get first variation for reference, replacing the variable product
+										$variable_product = current( $product['variations'] );
+									?>
 
 									<td class="number" rowspan="<?php echo $rowspan; ?>">
 										<?php echo $no; ?>.
 									</td>						
 
 									<td class="product-type" rowspan="<?php echo $rowspan; ?>">
-										<?php echo $product['variable']->product_type; ?>
+										<?php echo $variable_product->product_type; ?>
 									</td>					
 
 									<td class="brand" rowspan="<?php echo $rowspan; ?>">
-										<?php the_terms( $product['variable']->id, 'brand' ); ?>
+										<?php the_terms( $variable_product->id, 'brand' ); ?>
 									</td>	
 								
 									<td class="name column-name" rowspan="<?php echo $rowspan; ?>">
-										<?php echo $this->product->get_title( $product['variable'] ); ?>
+
+										<?php echo $this->product->get_title( $variable_product ); ?>
 
 										<p>
-											<a href="<?php echo get_permalink( $product['variable']->id ); ?>"><?php _e( 'View', 'woocommerce-sale-overview' ); ?></a> |
-											<a href="<?php echo $this->product->get_edit_url( $product['variable']->id ); ?>"><?php _e( 'Edit', 'woocommerce-sale-overview' ); ?></a>
+											<a href="<?php echo get_permalink( $variable_product->id ); ?>"><?php _e( 'View', 'woocommerce-sale-overview' ); ?></a> |
+											<a href="<?php echo $this->product->get_edit_url( $variable_product->id ); ?>"><?php _e( 'Edit', 'woocommerce-sale-overview' ); ?></a>
 										</p>
 									</td>
 
@@ -276,7 +281,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 										<?php $variation_index = 0; foreach( $product['variations'] as $variation ) : ?>
 
-											<?php echo ( $variation_index > 0 ) ? '</tr><tr>' : ''; ?>
+											<?php if ( $variation_index > 0 ) : ?>
+
+												</tr><tr <?php echo ( $no % 2 == 0 ) ? '' : 'class="alternate"' ?>>
+
+											<?php endif; ?>
 
 											<td class="name">
 												<p style="margin-bottom: 0; font-size: 13px; font-weight: bold;">
@@ -326,7 +335,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 							<?php else : ?>
 
-								<td class="number" rowspan="<?php echo $rowspan; ?>">
+								<td class="number">
 									<?php echo $no; ?>.
 								</td>						
 
