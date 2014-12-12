@@ -208,7 +208,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				<table class="wp-list-table widefat fixed posts" style="margin-top: 20px;">
 					<thead>
 						<tr>
-							<th style="width: 30px;"><?php _e( 'No.', 'woocommerce-sale-overview' ); ?></th>
 							<th style="width: 110px;"><?php _e( 'Product Type', 'woocommerce-sale-overview' ); ?></th>
 							<th><?php _e( 'Brand', 'woocommerce-sale-overview' ); ?></th>
 							<th><?php _e( 'Name', 'woocommerce-sale-overview' ); ?></th>
@@ -252,10 +251,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 										// Get first variation for reference, replacing the variable product
 										$variable_product = current( $product['variations'] );
 									?>
-
-									<td class="number" rowspan="<?php echo $rowspan; ?>">
-										<?php echo $no; ?>.
-									</td>						
 
 									<td class="product-type" rowspan="<?php echo $rowspan; ?>">
 										<?php echo $variable_product->product_type; ?>
@@ -333,11 +328,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 								<?php endif; // isset( $product['variable'] ) ?>
 
-							<?php else : ?>
-
-								<td class="number">
-									<?php echo $no; ?>.
-								</td>						
+							<?php else : ?>			
 
 								<td class="product-type">
 									<?php echo $product->product_type; ?>
