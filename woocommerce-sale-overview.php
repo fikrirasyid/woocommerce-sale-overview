@@ -89,6 +89,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 				$current_tab = 'scheduled';
 
+			} elseif( isset( $_GET['tab'] ) && 'clear_cache' == $_GET['tab'] ) {
+
+				$current_tab = 'clear_cache';
+
 			} else {
 
 				$products_ids = $this->product->get_sale_products_ids();
@@ -100,8 +104,30 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 			// Render tab nav
 			$this->render_tab_nav( $current_tab );
 
-			// Render table
-			$this->render_table( $products_ids );
+			// render main view
+			switch ( $current_tab ) {
+				case 'clear_cache':
+
+					// Removing Transient
+					delete_transient( 'wc_sale_overview_variable_products_ids' );
+					delete_transient( 'wc_sale_overview_sale_products_ids' );
+					delete_transient( 'wc_sale_overview_scheduled_products_ids' );
+
+					echo '<p style="margin: 40px 0;">';
+
+					_e( 'All data cache has been deleted!', 'woocommerce-sale-overview' );
+
+					echo '</p>';
+
+					break;
+				
+				default:
+
+					// Render table
+					$this->render_table( $products_ids );
+
+					break;
+			}
 
 			// Render wrapper
 			$this->render_div( 'end' );
@@ -153,6 +179,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 			$tabs = array(
 				'current'	 	=> __( 'Currently on Sale', 'woocommerce-sale-overview' ),
 				'scheduled' 	=> __( 'Scheduled for Sale', 'woocommerce-sale-overview' ),
+				'clear_cache' 	=> __( 'Clear Cache', 'woocommerce-sale-overview' ),
 			);
 
 			echo '<h2 class="nav-tab-wrapper woo-nav-tab-wrapper">';
