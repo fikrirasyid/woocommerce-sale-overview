@@ -194,8 +194,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							<th><?php _e( 'Normal Price', 'woocommerce-sale-overview' ); ?></th>
 							<th><?php _e( 'Sale Price', 'woocommerce-sale-overview' ); ?></th>
 							<th><?php _e( 'Sale Percentage', 'woocommerce-sale-overview' ); ?></th>
-							<th><?php _e( 'Start Time', 'woocommerce-sale-overview' ); ?></th>
-							<th><?php _e( 'End Time', 'woocommerce-sale-overview' ); ?></th>
+							<th style="width: 150px;"><?php _e( 'Start Time', 'woocommerce-sale-overview' ); ?></th>
+							<th style="width: 150px;"><?php _e( 'End Time', 'woocommerce-sale-overview' ); ?></th>
 							<th style="width: 60px;"><?php _e( 'Image', 'woocommerce-sale-overview' ); ?></th>
 						</tr>
 					</thead>				

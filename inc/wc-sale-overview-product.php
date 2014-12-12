@@ -117,6 +117,7 @@ class WC_Sale_Overview_Product{
 		
 		$output = '';
 
+		$current_time = current_time( 'timestamp' );
 		$timestamp 	= get_post_meta( $product_id, "_sale_price_dates_{$mode}", true );
 
 		if( $timestamp && $timestamp != '' ){
@@ -125,6 +126,14 @@ class WC_Sale_Overview_Product{
 			$output .= date( 'j M Y', $timestamp );
 			$output .= '<br />';
 			$output .= date( 'G:i', $timestamp );
+			$output .= '<br /><br />';
+
+			if( $current_time < $timestamp ){
+				$output .= sprintf( __( '%s from now', 'woocommerce-sale-overview' ), human_time_diff( $current_time, $timestamp ) );
+			} else {
+				$output .= sprintf( __( '%s ago', 'woocommerce-sale-overview' ), human_time_diff( $current_time, $timestamp ) );
+			}
+
 		} else {
 			$output .= '-';
 		}		
