@@ -75,7 +75,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		 * @return void
 		 */
 		public function render_page(){
-			
+
 			$sale_products_ids = $this->product->get_sale_products_ids();
 
 			// Render wrapper
@@ -474,10 +474,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					
 					</tbody>
 				</table>
-				
-				<p class="load-more-wrap" style="text-align: center; padding: 20px 0;">				
-					<a href="#" class="button load-more"><?php _e( 'Load More', 'woocommerce-sale-overview' ); ?></a>
-				</p>
 
 				<?php
 
