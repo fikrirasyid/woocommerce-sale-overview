@@ -128,6 +128,12 @@ class WC_Sale_Overview_Product{
 	 * @return int|string 	percentage
 	 */
 	public function get_sale_percentage( $product ){
+		/**
+		 * Prevent division by zero
+		 */
+		if( 0 == $product->get_regular_price() )
+			return '-';
+
 		$decimal = ( ( $product->get_regular_price() - $product->get_sale_price() ) / $product->get_regular_price() ) * 100;
 
 		return sprintf ("%.2f%%", $decimal );
