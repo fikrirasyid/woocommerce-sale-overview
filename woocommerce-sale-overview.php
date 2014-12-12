@@ -76,12 +76,29 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		 */
 		public function render_page(){
 
-			$sale_products_ids = $this->product->get_sale_products_ids();
-
 			// Render wrapper
 			$this->render_div( 'start', array( 'class' => 'wrap' ) );
 
-			$this->render_table_minimal( $sale_products_ids );
+			// Get correct tabs data
+			if( isset( $_GET['tab'] ) && 'scheduled' == $_GET['tab'] ){
+
+				$products_ids = $this->product->get_scheduled_products_ids();
+
+				$current_tab = 'scheduled';
+
+			} else {
+
+				$products_ids = $this->product->get_sale_products_ids();
+
+				$current_tab = 'current';
+
+			}
+
+			// Render tab nav
+			$this->render_tab_nav( $current_tab );
+
+			// Render table
+			$this->render_table_minimal( $products_ids );
 
 			// Render wrapper
 			$this->render_div( 'end' );
@@ -128,13 +145,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		 * @param string  	current|scheduled
 		 * @return void
 		 */
-		private function render_tab_nav( $selected = 'current', $count = array() ){
-			$default_count = array(
-				'current' => 0,
-				'scheduled' => 0
-			);
-
-			$count = wp_parse_args( $count, $default_count );
+		private function render_tab_nav( $selected = 'current' ){
 
 			$tabs = array(
 				'current'	 	=> __( 'Currently on Sale', 'woocommerce-sale-overview' ),
@@ -145,9 +156,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 			foreach ( $tabs as $key => $label ) {
 				if( $selected == $key ){
-					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab nav-tab-active">' . $label . ' ( '. $count[$key] .' )</a>';
+					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab nav-tab-active">' . $label . '</a>';
 				} else {					
-					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab">' . $label . ' ( '. $count[$key] .' )</a>';
+					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab">' . $label . '</a>';
 				}
 			}
 
@@ -451,11 +462,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							</td>		
 
 							<td class="time">
-								<?php echo $this->product->get_sale_time( $product->id, 'from' ); ?>
+								<?php echo $this->product->get_sale_time( $product_id, 'from' ); ?>
 							</td>		
 
 							<td class="time">
-								<?php echo $this->product->get_sale_time( $product->id, 'to' ); ?>
+								<?php echo $this->product->get_sale_time( $product_id, 'to' ); ?>
 							</td>		
 
 							<td class="thumb">
