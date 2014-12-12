@@ -75,65 +75,13 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		 * @return void
 		 */
 		public function render_page(){
-
-			/**
-			 * Variable products mess the counting mechanism: it doens't appear on the interface hence it need to be removed..
-			 * from the product ids
-			 * 
-			 * Getting all variable product ids
-			 */
-			$variable_products_ids 		= $this->product->get_all_variable_products_ids();
-
-			$sale_products_ids 			= array_diff( wc_get_product_ids_on_sale(), $variable_products_ids );
-
-			$scheduled_products_ids 	= array_diff( $this->product->get_scheduled_products_ids(), $variable_products_ids );
-
-			$sale_count 				= array( 
-				'current' => count( $sale_products_ids ), 
-				'scheduled' => count( $scheduled_products_ids ) 
-			);
-
-			/**
-			 * Getting page variable
-			 */
-			if( isset( $_GET['page'] ) ){
-				$page = intval( $_GET['page'] );
-			} else {
-				$page = 1;
-			}
-
-			$next_page = $page + 1;
-
-			$products_per_page = 10;
-
-			$products_start = ( $page * $products_per_page ) - $products_per_page - 1; // array_slice is zero based
+			
+			$sale_products_ids = $this->product->get_sale_products_ids();
 
 			// Render wrapper
 			$this->render_div( 'start', array( 'class' => 'wrap' ) );
 
-			if( isset( $_GET['tab'] ) && 'scheduled' == $_GET['tab'] ){
-
-				// Render tab
-				$this->render_tab_nav( 'scheduled', $sale_count ); 
-
-				// Get scheduled products
-				$products_ids = $scheduled_products_ids;
-
-			} else {
-				
-				// Render tab
-				$this->render_tab_nav( 'current', $sale_count ); 
-
-				// Get products ids
-				$products_ids = $sale_products_ids;
-
-			}
-
-			// Get products
-			$products = $this->product->get_products( array_slice( $products_ids, $products_start, $products_per_page ) );
-
-			// Render table
-			$this->render_table( $products, $next_page );
+			$this->render_table_minimal( $sale_products_ids );
 
 			// Render wrapper
 			$this->render_div( 'end' );
@@ -391,6 +339,130 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 								</td>
 
 							<?php endif; // isset( $product['variable'] ) ?>
+
+						</tr>
+
+						<?php
+
+					endforeach; // foreach( $products )
+
+					?>
+					
+					</tbody>
+				</table>
+				
+				<p class="load-more-wrap" style="text-align: center; padding: 20px 0;">				
+					<a href="#" class="button load-more"><?php _e( 'Load More', 'woocommerce-sale-overview' ); ?></a>
+				</p>
+
+				<?php
+
+			endif; // ! empty( $products )					
+		}
+
+		/**
+		 * Render sale table
+		 * 
+		 * @access private
+		 * @param obj 	grouped product object
+		 * @return void
+		 */
+		private function render_table_minimal( $products ){
+			$no = 0;
+
+			if( ! empty( $products ) ) :
+
+				?>
+
+				<table class="wp-list-table widefat fixed posts" style="margin-top: 20px;">
+					<thead>
+						<tr>
+							<th style="width: 30px;"><?php _e( 'No.', 'woocommerce-sale-overview' ); ?></th>
+							<th><?php _e( 'Name', 'woocommerce-sale-overview' ); ?></th>
+							<th><?php _e( 'Brand', 'woocommerce-sale-overview' ); ?></th>
+							<th style="width: 110px;"><?php _e( 'Product Type', 'woocommerce-sale-overview' ); ?></th>
+							<th><?php _e( 'Variations', 'woocommerce-sale-overview' ); ?></th>
+							<th><?php _e( 'Normal Price', 'woocommerce-sale-overview' ); ?></th>
+							<th><?php _e( 'Sale Price', 'woocommerce-sale-overview' ); ?></th>
+							<th><?php _e( 'Sale Percentage', 'woocommerce-sale-overview' ); ?></th>
+							<th style="width: 150px;"><?php _e( 'Start Time', 'woocommerce-sale-overview' ); ?></th>
+							<th style="width: 150px;"><?php _e( 'End Time', 'woocommerce-sale-overview' ); ?></th>
+							<th style="width: 60px;"><?php _e( 'Image', 'woocommerce-sale-overview' ); ?></th>
+						</tr>
+					</thead>				
+					<tbody id="the-list">
+
+					<?php
+
+					foreach( $products as $product_id ) :
+
+						$product = wc_get_product( $product_id );
+
+						// Skip variable product
+						if( 'variable' == $product->product_type ){
+							continue;
+						}
+
+						$no++;
+
+						?>
+
+						<tr <?php echo ( $no % 2 == 0 ) ? '' : 'class="alternate"' ?>>
+
+							<td class="no">
+								<?php echo $no; ?>.
+							</td>
+
+							<td class="name column-name">
+								<?php echo $this->product->get_title( $product ); ?>
+
+								<p>
+									<a href="<?php echo get_permalink( $product->id ); ?>"><?php _e( 'View', 'woocommerce-sale-overview' ); ?></a> |
+									<a href="<?php echo $this->product->get_edit_url( $product->id ); ?>"><?php _e( 'Edit', 'woocommerce-sale-overview' ); ?></a>
+								</p>
+							</td>	
+
+							<td class="brand">
+								<?php the_terms( $product->id, 'brand' ); ?>
+							</td>		
+
+							<td class="product-type">
+								<?php echo $product->product_type; ?>
+							</td>									
+
+							<td>
+								<?php 
+									if( 'variation' == $product->product_type ) :
+										echo $this->product->get_attributes( $product->get_variation_attributes() );										
+									endif; 
+								?>
+							</td>
+
+							<td class="price">
+								<?php echo wc_price( $product->get_regular_price() ); ?>
+							</td>					
+
+							<td class="price">
+								<?php echo wc_price( $product->get_sale_price() ); ?>
+							</td>			
+
+							<td class="percentage">
+								<?php echo $this->product->get_sale_percentage( $product ); ?>
+							</td>		
+
+							<td class="time">
+								<?php echo $this->product->get_sale_time( $product->id, 'from' ); ?>
+							</td>		
+
+							<td class="time">
+								<?php echo $this->product->get_sale_time( $product->id, 'to' ); ?>
+							</td>		
+
+							<td class="thumb">
+								<a href="<?php echo $this->product->get_edit_url( $product->id ); ?>" class="thumb-wrap" style="display: inline-block; width:50px;">
+									<?php echo $product->get_image( 'shop_thumbnail', array( 'style' => 'width: 100%; height:auto;' ) ); ?>					
+								</a>
+							</td>
 
 						</tr>
 
