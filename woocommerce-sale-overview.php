@@ -113,7 +113,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					delete_transient( 'wc_sale_overview_sale_products_ids' );
 					delete_transient( 'wc_sale_overview_scheduled_products_ids' );
 
-					echo '<p style="margin: 40px 0;">';
+					echo '<p style="margin: 30px 0;">';
 
 					_e( 'All data cache has been deleted!', 'woocommerce-sale-overview' );
 
@@ -311,6 +311,22 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				</table>
 
 				<?php
+
+			else : 
+
+				echo '<p style="margin: 30px 0;">';
+
+				if( isset( $_GET['tab'] ) && 'scheduled' == $_GET['tab'] ){
+
+					_e( 'There is no data to be displayed. You have not scheduled any sale product yet', 'woocommerce-sale-overview' );
+
+				} else {
+
+					_e( 'There is no data to be displayed. You have not set any sale product yet', 'woocommerce-sale-overview' );
+
+				}
+
+				echo '</p>';
 
 			endif; // ! empty( $products )					
 		}
