@@ -76,17 +76,34 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		 */
 		public function render_page(){
 
+			// Render wrapper
 			$this->render_div( 'start', array( 'class' => 'wrap' ) );
 
-			// Render tab
-			$this->render_tab_nav(); 
+			if( isset( $_GET['tab'] ) && 'scheduled' == $_GET['tab'] ){
 
-			// Get prepared products
-			$products = $this->product->get_products();
+				// Render tab
+				$this->render_tab_nav( 'scheduled' ); 
+
+				// Get scheduled products
+				$products_ids = $this->product->get_scheduled_products_ids();
+
+			} else {
+				
+				// Render tab
+				$this->render_tab_nav(); 
+
+				// Get products ids
+				$products_ids = wc_get_product_ids_on_sale();
+
+			}
+
+			// Get products
+			$products = $this->product->get_products( $products_ids );
 
 			// Render table
 			$this->render_table( $products );
 
+			// Render wrapper
 			$this->render_div( 'end' );
 
 		}
@@ -260,15 +277,15 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 											</td>		
 
 											<td class="time">
-												<?php echo $this->product->get_sale_time( $variation->id, 'from' ); ?>
+												<?php echo $this->product->get_sale_time( $variation->get_variation_id(), 'from' ); ?>
 											</td>		
 
 											<td class="time">
-												<?php echo $this->product->get_sale_time( $variation->id, 'to' ); ?>
+												<?php echo $this->product->get_sale_time( $variation->get_variation_id(), 'to' ); ?>
 											</td>		
 
 											<td class="thumb">
-												<a href="<?php echo $this->product->get_edit_url( $variation->id ); ?>" class="thumb-wrap" style="display: inline-block; width:50px;">
+												<a href="<?php echo $this->product->get_edit_url( $variation->get_variation_id() ); ?>" class="thumb-wrap" style="display: inline-block; width:50px;">
 													<?php echo $variation->get_image( 'shop_thumbnail', array( 'style' => 'width: 100%; height:auto;' ) ); ?>					
 												</a>
 											</td>

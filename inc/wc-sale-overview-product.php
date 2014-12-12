@@ -2,12 +2,40 @@
 /**
 * Wrapping wc_get_product with various methods to speed up things
 */
-class WC_Sale_Overview_Product{
-	var $product;
-	var $product_ids_on_sale;
+class WC_Sale_Overview_Product{	
 
-	public function __construct(){
-		$this->product_ids_on_sale = wc_get_product_ids_on_sale();		
+	/**
+	 * Get scheduled product ID
+	 * 
+	 * @return array
+	 */
+	public function get_scheduled_products_ids(){
+		$current_time = current_time( 'timestamp' );
+
+		$args = array(
+			'post_type' 	=> array( 'product', 'product_variation' ),
+			'post_status' 	=> 'publish',
+			'posts_per_page'=> -1,
+			'meta_key'		=> '_sale_price_dates_from',
+			'meta_value'	=> $current_time,
+			'meta_compare'	=> '>='
+		);
+
+		$products = get_posts( $args );
+
+		$ids = array();
+
+		if( ! empty( $products ) ){
+			foreach ( $products as $product ) {
+				$ids[] = $product->ID;
+
+				if( 'product_variation' == $product->post_type ){
+					$ids[] = $product->post_parent;
+				}
+			}
+		}
+
+		return array_unique( $ids );
 	}
 
 	/**
@@ -16,12 +44,13 @@ class WC_Sale_Overview_Product{
 	 * @access public
 	 * @return obj
 	 */	
-	public function get_products(){
+	public function get_products( $products_ids = array() ){
 		$products = array();
 
-		if( ! empty( $this->product_ids_on_sale ) ){
+		if( ! empty( $products_ids ) ){
 
-			foreach ( $this->product_ids_on_sale as $product_id ) {
+			foreach ( $products_ids as $product_id ) {
+
 				$product = wc_get_product( $product_id );
 
 				if( 'variation' == $product->product_type ){					
@@ -32,6 +61,7 @@ class WC_Sale_Overview_Product{
 				} else {
 					$products[$product->id] = $product;
 				}
+
 			}
 		}
 
