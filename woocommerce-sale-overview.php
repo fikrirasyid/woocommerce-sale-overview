@@ -79,6 +79,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 			// Render wrapper
 			$this->render_div( 'start', array( 'class' => 'wrap' ) );
 
+			// Render title
+			echo '<h2>'. __( "Sale Overview", "woocommerce-sale-overview" ) .'</h2><br />';
+
 			// Get correct tabs data
 			if( isset( $_GET['tab'] ) && 'scheduled' == $_GET['tab'] ){
 
