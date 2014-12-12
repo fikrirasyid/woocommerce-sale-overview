@@ -76,24 +76,41 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		 */
 		public function render_page(){
 
+			/**
+			 * Variable products mess the counting mechanism: it doens't appear on the interface hence it need to be removed..
+			 * from the product ids
+			 * 
+			 * Getting all variable product ids
+			 */
+			$variable_products_ids 		= $this->product->get_all_variable_products_ids();
+
+			$sale_products_ids 			= array_diff( wc_get_product_ids_on_sale(), $variable_products_ids );
+
+			$scheduled_products_ids 	= array_diff( $this->product->get_scheduled_products_ids(), $variable_products_ids );
+
+			$sale_count 				= array( 
+				'current' => count( $sale_products_ids ), 
+				'scheduled' => count( $scheduled_products_ids ) 
+			);
+
 			// Render wrapper
 			$this->render_div( 'start', array( 'class' => 'wrap' ) );
 
 			if( isset( $_GET['tab'] ) && 'scheduled' == $_GET['tab'] ){
 
 				// Render tab
-				$this->render_tab_nav( 'scheduled' ); 
+				$this->render_tab_nav( 'scheduled', $sale_count ); 
 
 				// Get scheduled products
-				$products_ids = $this->product->get_scheduled_products_ids();
+				$products_ids = $scheduled_products_ids;
 
 			} else {
 				
 				// Render tab
-				$this->render_tab_nav(); 
+				$this->render_tab_nav( 'current', $sale_count ); 
 
 				// Get products ids
-				$products_ids = wc_get_product_ids_on_sale();
+				$products_ids = $sale_products_ids;
 
 			}
 
@@ -105,7 +122,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 			// Render wrapper
 			$this->render_div( 'end' );
-
 		}
 
 		/**
@@ -149,7 +165,13 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 		 * @param string  	current|scheduled
 		 * @return void
 		 */
-		private function render_tab_nav( $selected = 'current' ){
+		private function render_tab_nav( $selected = 'current', $count = array() ){
+			$default_count = array(
+				'current' => 0,
+				'scheduled' => 0
+			);
+
+			$count = wp_parse_args( $count, $default_count );
 
 			$tabs = array(
 				'current'	 	=> __( 'Currently on Sale', 'woocommerce-sale-overview' ),
@@ -160,9 +182,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 			foreach ( $tabs as $key => $label ) {
 				if( $selected == $key ){
-					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab nav-tab-active">' . $label . '</a>';
+					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab nav-tab-active">' . $label . ' ( '. $count[$key] .' )</a>';
 				} else {					
-					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab">' . $label . '</a>';
+					echo '<a href="'. admin_url( "edit.php?post_type=product&page=woocommerce-sale-overview&tab=" . $key ) .'" class="nav-tab">' . $label . ' ( '. $count[$key] .' )</a>';
 				}
 			}
 
@@ -368,8 +390,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 				<?php
 
-			endif; // ! empty( $products )		
-			
+			endif; // ! empty( $products )					
 		}
 
 	}
