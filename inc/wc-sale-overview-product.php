@@ -5,6 +5,41 @@
 class WC_Sale_Overview_Product{	
 
 	/**
+	 * Get all variable product id count
+	 * 
+	 * @return array 	IDs
+	 */
+	public function get_all_variable_products_ids(){
+		global $wpdb;
+
+		$posts = $wpdb->get_results("SELECT posts.ID FROM 
+								{$wpdb->posts} posts, 
+								{$wpdb->term_relationships} term_relationships, 
+								{$wpdb->term_taxonomy} term_taxonomy,
+								{$wpdb->terms} terms
+								WHERE terms.name = 'variable'
+								AND terms.term_id = term_taxonomy.term_id
+								AND term_taxonomy.term_taxonomy_id = term_relationships.term_taxonomy_id
+								AND term_relationships.object_id = posts.ID
+								AND posts.post_type = 'product'
+								AND posts.post_status = 'publish'");
+
+		$posts_ids = array();
+
+		// Prepare the result
+		if( ! empty( $posts ) ){
+
+			foreach ( $posts as $post ) {
+
+				$posts_ids[] = intval( $post->ID );
+
+			}
+		}
+
+		return $posts_ids;
+	}
+
+	/**
 	 * Get scheduled product ID
 	 * 
 	 * @return array
