@@ -93,6 +93,21 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				'scheduled' => count( $scheduled_products_ids ) 
 			);
 
+			/**
+			 * Getting page variable
+			 */
+			if( isset( $_GET['page'] ) ){
+				$page = intval( $_GET['page'] );
+			} else {
+				$page = 1;
+			}
+
+			$next_page = $page + 1;
+
+			$products_per_page = 10;
+
+			$products_start = ( $page * $products_per_page ) - $products_per_page - 1; // array_slice is zero based
+
 			// Render wrapper
 			$this->render_div( 'start', array( 'class' => 'wrap' ) );
 
@@ -115,10 +130,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 			}
 
 			// Get products
-			$products = $this->product->get_products( $products_ids );
+			$products = $this->product->get_products( array_slice( $products_ids, $products_start, $products_per_page ) );
 
 			// Render table
-			$this->render_table( $products );
+			$this->render_table( $products, $next_page );
 
 			// Render wrapper
 			$this->render_div( 'end' );
@@ -371,7 +386,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 								<td class="thumb">
 									<a href="<?php echo $this->product->get_edit_url( $product->id ); ?>" class="thumb-wrap" style="display: inline-block; width:50px;">
-										<?php echo $product->get_image( 'shop_thumbnail', array( 'style' => 'width: 100%; height:auto;' ) ); ?>					
+										<?php // echo $product->get_image( 'shop_thumbnail', array( 'style' => 'width: 100%; height:auto;' ) ); ?>					
 									</a>
 								</td>
 
@@ -387,6 +402,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					
 					</tbody>
 				</table>
+				
+				<p class="load-more-wrap" style="text-align: center; padding: 20px 0;">				
+					<a href="#" class="button load-more"><?php _e( 'Load More', 'woocommerce-sale-overview' ); ?></a>
+				</p>
 
 				<?php
 
