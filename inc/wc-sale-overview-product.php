@@ -55,7 +55,6 @@ class WC_Sale_Overview_Product{
 
 				if( 'variation' == $product->product_type ){					
 					$products[$product->id]['variations'][$product->get_variation_id()] = $product;
-
 				} elseif( 'variable' == $product->product_type ) {
 					$products[$product->id]['variable'] = $product;
 				} else {
