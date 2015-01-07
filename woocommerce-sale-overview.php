@@ -52,6 +52,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 			// Transient flushing  
 	        add_action( 'save_post', array( $this, 'flush_transient_on_product_update' ) );
+
+	        // Compatibility with woocommerce-bulk-sale. Flush when it is updated
+	        add_action( 'woocommerce_bulk_sale_do_bulk_sale', array( $this, 'flush_transient' ) );
 		}
 
 		/**
