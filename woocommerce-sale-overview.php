@@ -49,6 +49,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 			// Add submenu
 			add_action( 'admin_menu', array( $this, 'add_page' ) );
+
+			// Transient flushing  
+	        add_action( 'save_post', array( $this, 'flush_transient_on_product_update' ) );
 		}
 
 		/**
@@ -109,9 +112,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				case 'clear_cache':
 
 					// Removing Transient
-					delete_transient( 'wc_sale_overview_variable_products_ids' );
-					delete_transient( 'wc_sale_overview_sale_products_ids' );
-					delete_transient( 'wc_sale_overview_scheduled_products_ids' );
+					$this->flush_transient();
 
 					echo '<p style="margin: 30px 0;">';
 
@@ -329,6 +330,43 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				echo '</p>';
 
 			endif; // ! empty( $products )					
+		}
+
+		/**
+		 * Flush transient if there's product updated
+		 * 
+		 * @access public
+		 * @return void
+		 */
+		public function flush_transient_on_product_update(){
+	        if( !function_exists( 'get_current_screen' ) )
+	            return;
+
+	        $screen = get_current_screen();
+
+	        // If this isn't ads editor, bail
+	        if ( $screen != null && $screen->post_type != 'product' ) return;
+
+	        // Bail if we're doing an auto save
+	        if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+
+	        // Flush transient
+	        $this->flush_transient();
+		}
+
+		/**
+		 * Flushing all transient of sale overview
+		 * 
+		 * @access public
+		 * @return void
+		 */
+		public function flush_transient(){
+
+			// Removing Transient
+			delete_transient( 'wc_sale_overview_variable_products_ids' );
+			delete_transient( 'wc_sale_overview_sale_products_ids' );
+			delete_transient( 'wc_sale_overview_scheduled_products_ids' );
+
 		}
 
 	}
