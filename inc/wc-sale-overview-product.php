@@ -65,6 +65,10 @@ class WC_Sale_Overview_Product{
 
 			$sale_products_ids = wc_get_product_ids_on_sale();
 
+			if( empty( $sale_products_ids ) ){
+				return false;
+			}
+
 			$products_args = array(
 				'post_type' 		=> array( 'product', 'product_variation' ),
 				'post__in' 			=> $sale_products_ids,
